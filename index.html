@@ -3,58 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPTSplitter</title>
+    <title>Splitter4GPT</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 20px;
             background-color: #121212;
             color: #e0e0e0;
+            font-size: 18px;
         }
         #container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
-            padding: 20px;
+            padding: 30px;
             background-color: #1e1e1e;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
         h1 {
             text-align: center;
             color: #ffffff;
+            font-size: 2.5em;
+            margin: 0 0 30px 0;
         }
         #text-box {
             width: 100%;
-            height: 150px;
-            margin-bottom: 20px;
-            padding: 10px;
+            height: 200px;
+            margin-bottom: 30px;
+            padding: 15px;
             box-sizing: border-box;
             border: 1px solid #333;
-            border-radius: 5px;
+            border-radius: 8px;
             background-color: #2c2c2c;
             color: #e0e0e0;
+            font-size: 1.1em;
         }
         #chunk-size {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             background-color: #333;
             color: #e0e0e0;
             border: 1px solid #444;
-            border-radius: 5px;
-            padding: 5px;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.1em;
+        }
+        #chunks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .chunk-box {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
             background-color: #333;
             border: 1px solid #444;
             cursor: pointer;
-            border-radius: 5px;
-            max-width: 200px;
+            border-radius: 8px;
+            width: 250px;
+            height: 100px; /* Adjusted height */
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.4; /* Adjust line height for better fit */
             transition: background-color 0.3s, transform 0.3s;
             color: #e0e0e0;
+            font-size: 1.1em;
         }
         .chunk-box:hover {
             background-color: #444;
@@ -63,32 +78,39 @@
         .chunk-box:active {
             background-color: #555;
         }
-        .chunk-box.flash {
-            animation: flash 0.8s ease-out;
-        }
-        @keyframes flash {
-            0% { background-color: #333; }
-            50% { background-color: #3a8f3a; } /* Pastel/darker green */
-            100% { background-color: #333; }
-        }
         #notification {
-            margin-top: 20px;
-            padding: 10px;
+            margin-top: 30px;
+            padding: 15px;
             background-color: #2c2c2c;
             border: 1px solid #444;
-            border-radius: 5px;
+            border-radius: 8px;
             color: #e0e0e0;
             opacity: 0;
             transition: opacity 0.5s;
+            font-size: 1.1em;
         }
         #notification.flash {
             animation: flash 0.8s ease-out;
+        }
+        @keyframes flash {
+            0% { background-color: #2c2c2c; }
+            50% { background-color: #3a8f3a; }
+            100% { background-color: #2c2c2c; }
+        }
+        #footer {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
     <div id="container">
-        <h1>GPTSplitter</h1>
+        <h1>Splitter4GPT</h1>
         <textarea id="text-box" placeholder="Paste your large text here..."></textarea>
         <label for="chunk-size">Chunk Size:</label>
         <select id="chunk-size">
@@ -100,16 +122,29 @@
         <div id="notification"></div>
     </div>
 
+    <div id="footer">
+        Splitter4GPT<br>
+        A text splitter/chunker to make pasting large text into ChatGPT easier.<br><br>
+        My favorite website for splitting up text went down recently so I asked ChatGPT to make this alternative. Funny world these days eh?<br><br>
+        Cobbled Together by Trent Sterling 2024
+    </div>
+
     <script>
         let notificationTimeout;
+        let updateChunksTimeout;
+        let textUpdateTimer;
+        let chunkElements = [];
 
         function updateChunks() {
             const maxChunkSize = parseInt(document.getElementById('chunk-size').value);
             const text = document.getElementById('text-box').value;
             const container = document.getElementById('chunks-container');
             const notification = document.getElementById('notification');
-            container.innerHTML = '';
-            notification.textContent = '';
+            
+            // Clear existing chunks but keep their references
+            chunkElements.forEach(chunkEl => {
+                chunkEl.element.style.display = 'none';
+            });
 
             if (text.length > 0) {
                 let start = 0;
@@ -126,23 +161,39 @@
                     }
 
                     const chunk = text.slice(start, end).trim();
-                    const chunkBox = document.createElement('div');
-                    chunkBox.className = 'chunk-box';
-                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
-                    chunkBox.dataset.chunkIndex = chunkIndex;
-                    chunkBox.addEventListener('click', function() {
-                        navigator.clipboard.writeText(chunk).then(() => {
-                            showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`);
-                            flashButton(chunkBox); // Flash the button
-                        }).catch(err => {
-                            showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`);
-                            console.error('Failed to copy chunk:', err);
+                    let chunkBox;
+                    
+                    if (chunkIndex - 1 < chunkElements.length) {
+                        chunkBox = chunkElements[chunkIndex - 1].element;
+                    } else {
+                        chunkBox = document.createElement('div');
+                        chunkBox.className = 'chunk-box';
+                        chunkBox.dataset.chunkIndex = chunkIndex;
+                        chunkBox.addEventListener('click', function() {
+                            navigator.clipboard.writeText(chunk).then(() => {
+                                showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`);
+                            }).catch(err => {
+                                showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`);
+                                console.error('Failed to copy chunk:', err);
+                            });
                         });
-                    });
-                    container.appendChild(chunkBox);
+                        container.appendChild(chunkBox);
+                        chunkElements.push({ element: chunkBox, index: chunkIndex });
+                    }
+
+                    chunkBox.style.display = 'flex'; // Show the element
+                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
+                    
                     start = end + 1;
                     chunkIndex++;
                 }
+
+                // Hide any remaining elements
+                chunkElements.forEach((chunkEl, i) => {
+                    if (i >= chunkIndex - 1) {
+                        chunkEl.element.style.display = 'none';
+                    }
+                });
             }
         }
 
@@ -150,29 +201,30 @@
             const notification = document.getElementById('notification');
             notification.textContent = message;
 
-            notification.classList.remove('flash');
-            void notification.offsetWidth;
-            notification.classList.add('flash');
+            notification.classList.remove('flash'); // Remove existing flash class
+            void notification.offsetWidth; // Trigger reflow
+            notification.classList.add('flash'); // Add flash class
 
             clearTimeout(notificationTimeout);
-            notification.style.opacity = 1;
+            notification.style.opacity = 1; // Make notification visible
             notificationTimeout = setTimeout(() => {
-                notification.style.opacity = 0;
-            }, 1500);
+                notification.style.opacity = 0; // Hide notification
+            }, 1500); // Duration to keep notification visible
         }
 
-        function flashButton(button) {
-            button.classList.add('flash');
-            setTimeout(() => {
-                button.classList.remove('flash');
-            }, 800); // Match duration of flash animation
+        function debounce(func, wait) {
+            return function(...args) {
+                clearTimeout(textUpdateTimer);
+                textUpdateTimer = setTimeout(() => func.apply(this, args), wait);
+            };
         }
 
-        document.getElementById('text-box').addEventListener('input', function() {
+        document.getElementById('text-box').addEventListener('input', debounce(function() {
             updateChunks();
             showNotification("Content updated!");
-        });
-        document.getElementById('chunk-size').addEventListener('change', updateChunks);
+        }, 300));
+
+        document.getElementById('chunk-size').addEventListener('change', debounce(updateChunks, 300));
     </script>
 </body>
 </html>
