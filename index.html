@@ -70,6 +70,7 @@
             transition: background-color 0.3s, transform 0.3s;
             color: #e0e0e0;
             font-size: 1.1em;
+            word-break: break-word; /* Break long words */
         }
         .chunk-box:hover {
             background-color: #444;
@@ -130,6 +131,7 @@
     </div>
 
     <script>
+        const previewSize = 50; // Preview size in characters
         let notificationTimeout;
         let updateChunksTimeout;
         let textUpdateTimer;
@@ -182,7 +184,7 @@
                     }
 
                     chunkBox.style.display = 'flex'; // Show the element
-                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
+                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`; // Display preview chars
                     
                     start = end + 1;
                     chunkIndex++;
