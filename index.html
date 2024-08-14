@@ -69,6 +69,17 @@
             background-color: #2c2c2c;
             border: 1px solid #444;
             border-radius: 5px;
+            color: #e0e0e0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        #notification.show {
+            opacity: 1;
+        }
+        @keyframes flash {
+            0% { background-color: #2c2c2c; }
+            50% { background-color: #444; }
+            100% { background-color: #2c2c2c; }
         }
     </style>
 </head>
@@ -87,6 +98,8 @@
     </div>
 
     <script>
+        let notificationTimeout;
+
         function updateChunks() {
             const maxChunkSize = parseInt(document.getElementById('chunk-size').value);
             const text = document.getElementById('text-box').value;
@@ -103,10 +116,9 @@
                 while (start < text.length) {
                     let end = start + maxChunkSize;
                     if (end < text.length) {
-                        // Find the last space before the end of the chunk
                         end = text.lastIndexOf(' ', end);
                         if (end === -1) {
-                            end = start + maxChunkSize; // If no space found, use maxChunkSize
+                            end = start + maxChunkSize;
                         }
                     }
 
@@ -114,23 +126,40 @@
                     const chunkBox = document.createElement('div');
                     chunkBox.className = 'chunk-box';
                     chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
-                    chunkBox.dataset.chunkIndex = chunkIndex; // Store index in data attribute
+                    chunkBox.dataset.chunkIndex = chunkIndex;
                     chunkBox.addEventListener('click', function() {
                         navigator.clipboard.writeText(chunk).then(() => {
-                            notification.textContent = `Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`;
+                            showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`);
                         }).catch(err => {
-                            notification.textContent = `Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`;
+                            showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`);
                             console.error('Failed to copy chunk:', err);
                         });
                     });
                     container.appendChild(chunkBox);
-                    start = end + 1; // Move to the next chunk
+                    start = end + 1;
                     chunkIndex++;
                 }
             }
         }
 
-        document.getElementById('text-box').addEventListener('input', updateChunks);
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            // Clear any existing timeout to ensure the latest notification is shown
+            clearTimeout(notificationTimeout);
+            notification.style.animation = 'flash 1s ease-out'; // Trigger animation
+            notificationTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+                notification.style.animation = ''; // Reset animation
+            }, 2000); // Duration to keep notification visible
+        }
+
+        document.getElementById('text-box').addEventListener('input', function() {
+            updateChunks();
+            showNotification("Content updated!");
+        });
         document.getElementById('chunk-size').addEventListener('change', updateChunks);
     </script>
 </body>
