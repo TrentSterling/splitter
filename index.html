@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTSplitter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        #container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        #text-box {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+        }
+        #chunk-size {
+            margin-bottom: 20px;
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .chunk-box {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
+            background-color: #333;
+            border: 1px solid #444;
+            cursor: pointer;
+            border-radius: 5px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: background-color 0.3s, transform 0.3s;
+            color: #e0e0e0;
+        }
+        .chunk-box:hover {
+            background-color: #444;
+            transform: scale(1.02);
+        }
+        .chunk-box:active {
+            background-color: #555;
+        }
+        #notification {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>GPTSplitter</h1>
+        <textarea id="text-box" placeholder="Paste your large text here..."></textarea>
+        <label for="chunk-size">Chunk Size:</label>
+        <select id="chunk-size">
+            <option value="10000">10,000</option>
+            <option value="15000" selected>15,000</option>
+            <option value="20000">20,000</option>
+        </select>
+        <div id="chunks-container"></div>
+        <div id="notification"></div>
+    </div>
+
+    <script>
+        function updateChunks() {
+            const maxChunkSize = parseInt(document.getElementById('chunk-size').value);
+            const text = document.getElementById('text-box').value;
+            const container = document.getElementById('chunks-container');
+            const notification = document.getElementById('notification');
+            container.innerHTML = '';
+            notification.textContent = '';
+
+            if (text.length > 0) {
+                let start = 0;
+                let chunkIndex = 1;
+                const totalChunks = Math.ceil(text.length / maxChunkSize);
+                while (start < text.length) {
+                    const chunk = text.slice(start, start + maxChunkSize);
+                    const chunkBox = document.createElement('div');
+                    chunkBox.className = 'chunk-box';
+                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
+                    chunkBox.dataset.chunkIndex = chunkIndex; // Store index in data attribute
+                    chunkBox.addEventListener('click', function() {
+                        navigator.clipboard.writeText(chunk).then(() => {
+                            notification.textContent = `Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`;
+                        }).catch(err => {
+                            notification.textContent = `Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`;
+                            console.error('Failed to copy chunk:', err);
+                        });
+                    });
+                    container.appendChild(chunkBox);
+                    start += maxChunkSize;
+                    chunkIndex++;
+                }
+            }
+        }
+
+        document.getElementById('text-box').addEventListener('input', updateChunks);
+        document.getElementById('chunk-size').addEventListener('change', updateChunks);
+    </script>
+</body>
+</html>
