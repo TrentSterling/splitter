@@ -48,6 +48,30 @@
             padding: 10px;
             font-size: 1.1em;
         }
+        #custom-size-container {
+            display: none;
+            margin-bottom: 30px;
+        }
+        #custom-size {
+            background-color: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.1em;
+        }
+        #apply-button {
+            background-color: #555;
+            color: #e0e0e0;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+        #apply-button:hover {
+            background-color: #666;
+        }
         #chunks-container {
             display: flex;
             flex-wrap: wrap;
@@ -63,14 +87,14 @@
             cursor: pointer;
             border-radius: 8px;
             width: 250px;
-            height: 100px; /* Adjusted height */
+            height: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.4; /* Adjust line height for better fit */
+            line-height: 1.4;
             transition: background-color 0.3s, transform 0.3s;
             color: #e0e0e0;
             font-size: 1.1em;
-            word-break: break-word; /* Break long words */
+            word-break: break-word;
         }
         .chunk-box:hover {
             background-color: #444;
@@ -118,7 +142,12 @@
             <option value="10000">10,000</option>
             <option value="15000" selected>15,000</option>
             <option value="20000">20,000</option>
+            <option value="CUSTOM">CUSTOM</option>
         </select>
+        <div id="custom-size-container">
+            <input type="number" id="custom-size" placeholder="Enter custom size" min="1">
+            <button id="apply-button">Apply</button>
+        </div>
         <div id="chunks-container"></div>
         <div id="notification"></div>
     </div>
@@ -131,28 +160,41 @@
     </div>
 
     <script>
-        const previewSize = 50; // Preview size in characters
+        const previewSize = 30; // Preview size in characters
+        const maxChunks = 100; // Maximum number of chunks
         let notificationTimeout;
-        let updateChunksTimeout;
-        let textUpdateTimer;
-        let chunkElements = [];
+        let debounceTimeout;
+        let updateChunksOnChange = false; // Prevent initial update
+        let isPageLoaded = false;
 
         function updateChunks() {
-            const maxChunkSize = parseInt(document.getElementById('chunk-size').value);
+            const chunkSizeElement = document.getElementById('chunk-size');
+            const customSizeElement = document.getElementById('custom-size');
+            const maxChunkSize = chunkSizeElement.value === 'CUSTOM'
+                ? parseInt(customSizeElement.value) || 0
+                : parseInt(chunkSizeElement.value);
             const text = document.getElementById('text-box').value;
             const container = document.getElementById('chunks-container');
             const notification = document.getElementById('notification');
-            
-            // Clear existing chunks but keep their references
-            chunkElements.forEach(chunkEl => {
-                chunkEl.element.style.display = 'none';
-            });
+
+            if (isNaN(maxChunkSize) || maxChunkSize <= 0) {
+                showNotification("Invalid chunk size. Please enter a positive number.");
+                return;
+            }
+
+            const totalChunks = Math.ceil(text.length / maxChunkSize);
+            if (totalChunks > maxChunks) {
+                showNotification(`Text is too long to process in ${maxChunks} chunks. Please increase the chunk size.`);
+                return;
+            }
+
+            // Clear existing chunks
+            container.innerHTML = '';
 
             if (text.length > 0) {
                 let start = 0;
                 let chunkIndex = 1;
-                const totalChunks = Math.ceil(text.length / maxChunkSize);
-                
+
                 while (start < text.length) {
                     let end = start + maxChunkSize;
                     if (end < text.length) {
@@ -163,70 +205,86 @@
                     }
 
                     const chunk = text.slice(start, end).trim();
-                    let chunkBox;
-                    
-                    if (chunkIndex - 1 < chunkElements.length) {
-                        chunkBox = chunkElements[chunkIndex - 1].element;
-                    } else {
-                        chunkBox = document.createElement('div');
-                        chunkBox.className = 'chunk-box';
-                        chunkBox.dataset.chunkIndex = chunkIndex;
-                        chunkBox.addEventListener('click', function() {
-                            navigator.clipboard.writeText(chunk).then(() => {
-                                showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`);
-                            }).catch(err => {
-                                showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`);
-                                console.error('Failed to copy chunk:', err);
-                            });
+                    const chunkBox = document.createElement('div');
+                    chunkBox.className = 'chunk-box';
+                    chunkBox.dataset.chunkIndex = chunkIndex;
+                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
+                    chunkBox.addEventListener('click', function() {
+                        navigator.clipboard.writeText(chunk).then(() => {
+                            showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`);
+                        }).catch(err => {
+                            showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`);
+                            console.error('Failed to copy chunk:', err);
                         });
-                        container.appendChild(chunkBox);
-                        chunkElements.push({ element: chunkBox, index: chunkIndex });
-                    }
+                    });
+                    container.appendChild(chunkBox);
 
-                    chunkBox.style.display = 'flex'; // Show the element
-                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`; // Display preview chars
-                    
                     start = end + 1;
                     chunkIndex++;
                 }
-
-                // Hide any remaining elements
-                chunkElements.forEach((chunkEl, i) => {
-                    if (i >= chunkIndex - 1) {
-                        chunkEl.element.style.display = 'none';
-                    }
-                });
             }
+
+            // Show "Content Updated" notification
+            showNotification("Content updated with new chunks!");
         }
 
         function showNotification(message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
 
-            notification.classList.remove('flash'); // Remove existing flash class
-            void notification.offsetWidth; // Trigger reflow
-            notification.classList.add('flash'); // Add flash class
+            notification.classList.remove('flash');
+            void notification.offsetWidth;
+            notification.classList.add('flash');
 
             clearTimeout(notificationTimeout);
-            notification.style.opacity = 1; // Make notification visible
+            notification.style.opacity = 1;
             notificationTimeout = setTimeout(() => {
-                notification.style.opacity = 0; // Hide notification
-            }, 1500); // Duration to keep notification visible
+                notification.style.opacity = 0;
+            }, 1500);
         }
 
-        function debounce(func, wait) {
-            return function(...args) {
-                clearTimeout(textUpdateTimer);
-                textUpdateTimer = setTimeout(() => func.apply(this, args), wait);
-            };
+        function handleTextChange() {
+            if (updateChunksOnChange) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    updateChunks();
+                }, 300);
+            }
         }
 
-        document.getElementById('text-box').addEventListener('input', debounce(function() {
+        function handleCustomSizeChange() {
+            updateChunksOnChange = false;
+        }
+
+        function handleApplyButtonClick() {
+            updateChunksOnChange = true;
             updateChunks();
-            showNotification("Content updated!");
-        }, 300));
+        }
 
-        document.getElementById('chunk-size').addEventListener('change', debounce(updateChunks, 300));
+        document.getElementById('text-box').addEventListener('input', handleTextChange);
+        document.getElementById('chunk-size').addEventListener('change', function() {
+            const customSizeContainer = document.getElementById('custom-size-container');
+            if (this.value === 'CUSTOM') {
+                customSizeContainer.style.display = 'block';
+            } else {
+                customSizeContainer.style.display = 'none';
+                updateChunksOnChange = true;
+                updateChunks();
+            }
+        });
+
+        document.getElementById('custom-size').addEventListener('input', handleCustomSizeChange);
+        document.getElementById('apply-button').addEventListener('click', handleApplyButtonClick);
+
+        window.addEventListener('load', () => {
+            isPageLoaded = true;
+            updateChunksOnChange = true;
+        });
+
+        // Initial update to handle initial content if page is loaded
+        if (isPageLoaded) {
+            updateChunks();
+        }
     </script>
 </body>
 </html>
