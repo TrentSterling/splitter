@@ -99,8 +99,18 @@
                 let start = 0;
                 let chunkIndex = 1;
                 const totalChunks = Math.ceil(text.length / maxChunkSize);
+                
                 while (start < text.length) {
-                    const chunk = text.slice(start, start + maxChunkSize);
+                    let end = start + maxChunkSize;
+                    if (end < text.length) {
+                        // Find the last space before the end of the chunk
+                        end = text.lastIndexOf(' ', end);
+                        if (end === -1) {
+                            end = start + maxChunkSize; // If no space found, use maxChunkSize
+                        }
+                    }
+
+                    const chunk = text.slice(start, end).trim();
                     const chunkBox = document.createElement('div');
                     chunkBox.className = 'chunk-box';
                     chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, 50)}...`; // Display first 50 chars
@@ -114,7 +124,7 @@
                         });
                     });
                     container.appendChild(chunkBox);
-                    start += maxChunkSize;
+                    start = end + 1; // Move to the next chunk
                     chunkIndex++;
                 }
             }
