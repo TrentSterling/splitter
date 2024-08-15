@@ -29,7 +29,7 @@
             transition: opacity 0.5s, background-color 0.5s;
             font-size: 1.1em;
             z-index: 1000;
-            max-width: 1000px; /* Match the container width */
+            max-width: 1000px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
@@ -55,7 +55,7 @@
 
         #container {
             max-width: 1000px;
-            margin: 60px auto 20px auto; /* Added margin-top for space below notification */
+            margin: 60px auto 20px auto;
             padding: 30px;
             background-color: #1e1e1e;
             border-radius: 10px;
@@ -122,8 +122,8 @@
         }
 
         #apply-button:active {
-            background-color: #4CAF50; /* A darker green */
-            transform: scale(0.98); /* Slightly scale down to indicate click */
+            background-color: #4CAF50;
+            transform: scale(0.98);
         }
 
         #chunks-container {
@@ -161,6 +161,16 @@
             background-color: #555;
         }
 
+        .chunk-box.flash-green {
+            animation: flash-green 0.5s ease-out;
+        }
+
+        @keyframes flash-green {
+            0% { background-color: #333; }
+            50% { background-color: #3a8f3a; }
+            100% { background-color: #333; }
+        }
+
         #footer {
             margin-top: 30px;
             padding: 20px;
@@ -193,12 +203,10 @@
         #faq strong {
             color: #ffffff;
         }
-
     </style>
 </head>
 <body>
     <div id="notification"></div>
-
     <div id="container">
         <h1>Splitter4GPT</h1>
         <textarea id="text-box" placeholder="Paste your large text here..."></textarea>
@@ -222,7 +230,7 @@
         My favorite website for splitting up text went down recently so I asked ChatGPT to make this alternative. Funny world these days eh?<br><br>
         Cobbled Together by Trent Sterling 2024
     </div>
-	
+    
     <div id="faq">
         <h2>FAQ</h2>
         <p><strong>What is this tool for?</strong><br>
@@ -234,7 +242,6 @@
         <p><strong>Can I customize the chunk size?</strong><br>
         Yes, you can set the chunk size to match your needs, making it easier to handle different types of text inputs.</p>
     </div>
-
 
     <script>
         const previewSize = 30; // Preview size in characters
@@ -265,7 +272,6 @@
                 return;
             }
 
-            // Clear existing chunks
             container.innerHTML = '';
 
             if (text.length > 0) {
@@ -288,6 +294,8 @@
                     chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
                     chunkBox.addEventListener('click', function() {
                         navigator.clipboard.writeText(chunk).then(() => {
+                            chunkBox.classList.add('flash-green');
+                            setTimeout(() => chunkBox.classList.remove('flash-green'), 500);
                             showNotification(`Chunk ${chunkBox.dataset.chunkIndex} copied to clipboard!`, 'success');
                         }).catch(err => {
                             showNotification(`Failed to copy Chunk ${chunkBox.dataset.chunkIndex}.`, 'error');
@@ -301,32 +309,25 @@
                 }
             }
 
-            // Show number of new chunks notification
             showNotification(`${totalChunks} chunks created.`, 'success');
         }
 
-       function showNotification(message, type) {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.className = type + ' flash';
-    notification.style.backgroundColor = type === 'success' ? '#3a8f3a' : '#a83232'; // Ensure background color is set immediately
-    notification.style.opacity = '1';
-
-    clearTimeout(notificationTimeout);
-    notificationTimeout = setTimeout(() => {
-        notification.style.opacity = '0';
-    }, 3000);
-}
-
-        document.getElementById('text-box').addEventListener('input', function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(updateChunks, 300);
-        });
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `flash ${type}`;
+            notification.style.opacity = '1';
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 3000);
+        }
 
         document.getElementById('chunk-size').addEventListener('change', function() {
-            const customSizeContainer = document.getElementById('custom-size-container');
-            customSizeContainer.style.display = this.value === 'CUSTOM' ? 'block' : 'none';
-            if (this.value !== 'CUSTOM') {
+            if (this.value === 'CUSTOM') {
+                document.getElementById('custom-size-container').style.display = 'block';
+            } else {
+                document.getElementById('custom-size-container').style.display = 'none';
                 updateChunks();
             }
         });
@@ -335,16 +336,25 @@
             updateChunks();
         });
 
-        document.getElementById('custom-size').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        document.getElementById('custom-size').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
                 updateChunks();
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('text-box').addEventListener('input', function() {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                if (document.getElementById('chunk-size').value !== 'CUSTOM') {
+                    updateChunks();
+                }
+            }, 300);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
             isPageLoaded = true;
-            showNotification(`Welcome!!!`, 'success');
-            //updateChunks(); // Initial chunk update
+            showNotification(`HELLO THERE! Welcome!`, 'success');
+            //updateChunks();
         });
     </script>
 </body>
