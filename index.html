@@ -15,15 +15,12 @@
         }
 
         #notification {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
+            position: relative;
+            margin: 5px;
+			margin-bottom:15px;
             padding: 15px;
             border: 1px solid transparent;
-            border-bottom: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 8px;
             color: #e0e0e0;
             opacity: 0;
             transition: opacity 0.5s, background-color 0.5s;
@@ -172,7 +169,7 @@
         }
 
         #footer {
-            margin-top: 30px;
+            margin-top: 100px;
             padding: 20px;
             background-color: #1e1e1e;
             border: 1px solid #444;
@@ -206,10 +203,10 @@
     </style>
 </head>
 <body>
-    <div id="notification"></div>
     <div id="container">
         <h1>Splitter4GPT</h1>
         <textarea id="text-box" placeholder="Paste your large text here..."></textarea>
+		<br>
         <label for="chunk-size">Chunk Size:</label>
         <select id="chunk-size">
             <option value="10000">10,000</option>
@@ -221,6 +218,7 @@
             <input type="number" id="custom-size" placeholder="Enter custom size" min="1">
             <button id="apply-button">Apply</button>
         </div>
+    <div id="notification"></div>
         <div id="chunks-container"></div>
     </div>
 
@@ -236,11 +234,14 @@
         <p><strong>What is this tool for?</strong><br>
         It helps you split large texts into smaller chunks so you can paste them into systems with limited input size, like ChatGPT.</p>
         <p><strong>Why is chunking important?</strong><br>
-        Large texts might exceed the input limits of certain platforms, causing errors or cutting off important information. Chunking ensures your entire message is processed.</p>
+        Large texts may exceed the input limits of certain platforms, causing errors or cutting off important information. Chunking ensures your entire message is processed.</p>
         <p><strong>How does it work?</strong><br>
         The tool splits your text based on the size you choose, and it provides you with smaller chunks that fit within the input limits. Each chunk can be copied individually.</p>
         <p><strong>Can I customize the chunk size?</strong><br>
         Yes, you can set the chunk size to match your needs, making it easier to handle different types of text inputs.</p>
+		<p><strong>Open Source?</strong><br>
+        Yes. I made this project by simply prompting ChatGPT, so I don't really own any of the code. Everything is embedded in this single page. View Source and check it out!</p>
+		
     </div>
 
 
@@ -301,6 +302,11 @@
             : parseInt(chunkSizeElement.value);
         const text = document.getElementById('text-box').value;
         const container = document.getElementById('chunks-container');
+
+    if (text.trim().length === 0) {
+        showNotification("Please paste some text!", 'error');
+        return;
+    }
 
         if (isNaN(maxChunkSize) || maxChunkSize <= 0) {
             showNotification("Invalid chunk size. Please enter a positive number.", 'error');
@@ -389,7 +395,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         initializePool();
         isPageLoaded = true;
-        showNotification(`HELLO THERE! Welcome!.`, 'success');
+        showNotification(`Welcome! Please paste some text.`, 'success');
     });
 </script>
 
