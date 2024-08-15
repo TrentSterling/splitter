@@ -13,6 +13,7 @@
             color: #e0e0e0;
             font-size: 18px;
         }
+
         #notification {
             position: fixed;
             top: 0;
@@ -31,22 +32,27 @@
             max-width: 1000px; /* Match the container width */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
+
         #notification.success {
             background-color: #3a8f3a;
             border-color: #2c2c2c;
         }
+
         #notification.error {
             background-color: #a83232;
             border-color: #8b0000;
         }
+
         #notification.flash {
             animation: flash 0.8s ease-out;
         }
+
         @keyframes flash {
             0% { background-color: inherit; }
             50% { background-color: inherit; }
             100% { background-color: inherit; }
         }
+
         #container {
             max-width: 1000px;
             margin: 60px auto 20px auto; /* Added margin-top for space below notification */
@@ -55,12 +61,14 @@
             border-radius: 10px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
+
         h1 {
             text-align: center;
             color: #ffffff;
             font-size: 2.5em;
             margin: 0 0 30px 0;
         }
+
         #text-box {
             width: 100%;
             height: 200px;
@@ -73,6 +81,7 @@
             color: #e0e0e0;
             font-size: 1.1em;
         }
+
         #chunk-size {
             margin-bottom: 30px;
             background-color: #333;
@@ -82,10 +91,12 @@
             padding: 10px;
             font-size: 1.1em;
         }
+
         #custom-size-container {
             display: none;
             margin-bottom: 30px;
         }
+
         #custom-size {
             background-color: #333;
             color: #e0e0e0;
@@ -94,6 +105,7 @@
             padding: 10px;
             font-size: 1.1em;
         }
+
         #apply-button {
             background-color: #555;
             color: #e0e0e0;
@@ -102,15 +114,24 @@
             padding: 10px;
             font-size: 1.1em;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
         }
+
         #apply-button:hover {
             background-color: #666;
         }
+
+        #apply-button:active {
+            background-color: #4CAF50; /* A darker green */
+            transform: scale(0.98); /* Slightly scale down to indicate click */
+        }
+
         #chunks-container {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
         }
+
         .chunk-box {
             display: flex;
             align-items: center;
@@ -130,13 +151,16 @@
             font-size: 1.1em;
             word-break: break-word;
         }
+
         .chunk-box:hover {
             background-color: #444;
             transform: scale(1.02);
         }
+
         .chunk-box:active {
             background-color: #555;
         }
+
         #footer {
             margin-top: 30px;
             padding: 20px;
@@ -146,6 +170,7 @@
             text-align: center;
             font-size: 1.1em;
         }
+
         #faq {
             margin: 30px auto;
             padding: 20px;
@@ -154,17 +179,21 @@
             border-radius: 8px;
             border: 1px solid #444;
         }
+
         #faq h2 {
             color: #ffffff;
             font-size: 2em;
             margin-bottom: 15px;
         }
+
         #faq p {
             margin-bottom: 10px;
         }
+
         #faq strong {
             color: #ffffff;
         }
+
     </style>
 </head>
 <body>
@@ -187,6 +216,13 @@
         <div id="chunks-container"></div>
     </div>
 
+    <div id="footer">
+        Splitter4GPT<br>
+        A text splitter/chunker to make pasting large text into ChatGPT easier.<br><br>
+        My favorite website for splitting up text went down recently so I asked ChatGPT to make this alternative. Funny world these days eh?<br><br>
+        Cobbled Together by Trent Sterling 2024
+    </div>
+	
     <div id="faq">
         <h2>FAQ</h2>
         <p><strong>What is this tool for?</strong><br>
@@ -199,12 +235,6 @@
         Yes, you can set the chunk size to match your needs, making it easier to handle different types of text inputs.</p>
     </div>
 
-    <div id="footer">
-        Splitter4GPT<br>
-        A text splitter/chunker to make pasting large text into ChatGPT easier.<br><br>
-        My favorite website for splitting up text went down recently so I asked ChatGPT to make this alternative. Funny world these days eh?<br><br>
-        Cobbled Together by Trent Sterling 2024
-    </div>
 
     <script>
         const previewSize = 30; // Preview size in characters
@@ -275,17 +305,18 @@
             showNotification(`${totalChunks} chunks created.`, 'success');
         }
 
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = type + ' flash';
-            notification.style.opacity = '1';
+       function showNotification(message, type) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = type + ' flash';
+    notification.style.backgroundColor = type === 'success' ? '#3a8f3a' : '#a83232'; // Ensure background color is set immediately
+    notification.style.opacity = '1';
 
-            clearTimeout(notificationTimeout);
-            notificationTimeout = setTimeout(() => {
-                notification.style.opacity = '0';
-            }, 3000);
-        }
+    clearTimeout(notificationTimeout);
+    notificationTimeout = setTimeout(() => {
+        notification.style.opacity = '0';
+    }, 3000);
+}
 
         document.getElementById('text-box').addEventListener('input', function() {
             clearTimeout(debounceTimeout);
@@ -312,7 +343,8 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             isPageLoaded = true;
-            updateChunks(); // Initial chunk update
+            showNotification(`Welcome!!!`, 'success');
+            //updateChunks(); // Initial chunk update
         });
     </script>
 </body>
