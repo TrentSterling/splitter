@@ -243,145 +243,157 @@
         Yes, you can set the chunk size to match your needs, making it easier to handle different types of text inputs.</p>
     </div>
 
-    <script>
-        const previewSize = 30; // Preview size in characters
-        const maxChunks = 100; // Maximum number of chunks
-        const poolSize = 100; // Size of the pool for chunk boxes
-        let notificationTimeout;
-        let debounceTimeout;
-        let chunkSize = parseInt(document.getElementById('chunk-size').value) || 15000;
-        let isPageLoaded = false;
 
-        // Pool of chunk boxes
-        const chunkBoxPool = [];
 
-        // Initialize the pool with chunk boxes
-        function initializePool() {
-            const container = document.getElementById('chunks-container');
-            for (let i = 0; i < poolSize; i++) {
-                const chunkBox = document.createElement('div');
-                chunkBox.className = 'chunk-box';
-                chunkBox.addEventListener('click', function() {
-                    const chunkIndex = chunkBox.dataset.chunkIndex;
-                    navigator.clipboard.writeText(chunkBox.dataset.chunk).then(() => {
-                        chunkBox.classList.add('flash-green');
-                        setTimeout(() => chunkBox.classList.remove('flash-green'), 500);
-                        showNotification(`Chunk ${chunkIndex} copied to clipboard!`, 'success');
-                    }).catch(err => {
-                        showNotification(`Failed to copy Chunk ${chunkIndex}.`, 'error');
-                        console.error('Failed to copy chunk:', err);
-                    });
+<script>
+    const previewSize = 30; // Preview size in characters
+    const maxChunks = 100; // Maximum number of chunks
+    const poolSize = 100; // Size of the pool for chunk boxes
+    let notificationTimeout;
+    let debounceTimeout;
+    let chunkSize = parseInt(document.getElementById('chunk-size').value) || 15000;
+    let isPageLoaded = false;
+
+    // Pool of chunk boxes
+    const chunkBoxPool = [];
+
+    // Initialize the pool with chunk boxes
+    function initializePool() {
+        const container = document.getElementById('chunks-container');
+        for (let i = 0; i < poolSize; i++) {
+            const chunkBox = document.createElement('div');
+            chunkBox.className = 'chunk-box';
+            chunkBox.addEventListener('click', function() {
+                const chunkIndex = chunkBox.dataset.chunkIndex;
+                navigator.clipboard.writeText(chunkBox.dataset.chunk).then(() => {
+                    chunkBox.classList.add('flash-green');
+                    setTimeout(() => chunkBox.classList.remove('flash-green'), 500);
+                    showNotification(`Chunk ${chunkIndex} copied to clipboard!`, 'success');
+                }).catch(err => {
+                    showNotification(`Failed to copy Chunk ${chunkIndex}.`, 'error');
+                    console.error('Failed to copy chunk:', err);
                 });
-                chunkBoxPool.push(chunkBox);
-            }
-        }
-
-        // Get a chunk box from the pool
-        function getChunkBox() {
-            return chunkBoxPool.length > 0 ? chunkBoxPool.pop() : document.createElement('div');
-        }
-
-        // Return a chunk box to the pool
-        function returnChunkBox(chunkBox) {
+            });
             chunkBoxPool.push(chunkBox);
         }
+    }
 
-        function updateChunks() {
-            const chunkSizeElement = document.getElementById('chunk-size');
-            const customSizeElement = document.getElementById('custom-size');
-            const maxChunkSize = chunkSizeElement.value === 'CUSTOM'
-                ? parseInt(customSizeElement.value) || 0
-                : parseInt(chunkSizeElement.value);
-            const text = document.getElementById('text-box').value;
-            const container = document.getElementById('chunks-container');
-            const notification = document.getElementById('notification');
+    // Get a chunk box from the pool
+    function getChunkBox() {
+        return chunkBoxPool.length > 0 ? chunkBoxPool.pop() : document.createElement('div');
+    }
 
-            if (isNaN(maxChunkSize) || maxChunkSize <= 0) {
-                showNotification("Invalid chunk size. Please enter a positive number.", 'error');
-                return;
-            }
+    // Return a chunk box to the pool
+    function returnChunkBox(chunkBox) {
+        chunkBox.innerHTML = ''; // Clear any text or data
+        chunkBox.dataset.chunkIndex = '';
+        chunkBox.dataset.chunk = '';
+        chunkBox.classList.remove('flash-green'); // Remove any previous flash effect
+        chunkBox.style.display = 'none'; // Hide the box
+        chunkBoxPool.push(chunkBox);
+    }
 
-            const totalChunks = Math.ceil(text.length / maxChunkSize);
-            if (totalChunks > maxChunks) {
-                showNotification(`Text is too long to process in ${maxChunks} chunks. Please increase the chunk size.`, 'error');
-                return;
-            }
+    function updateChunks() {
+        const chunkSizeElement = document.getElementById('chunk-size');
+        const customSizeElement = document.getElementById('custom-size');
+        const maxChunkSize = chunkSizeElement.value === 'CUSTOM'
+            ? parseInt(customSizeElement.value) || 0
+            : parseInt(chunkSizeElement.value);
+        const text = document.getElementById('text-box').value;
+        const container = document.getElementById('chunks-container');
 
-            container.innerHTML = '';
+        if (isNaN(maxChunkSize) || maxChunkSize <= 0) {
+            showNotification("Invalid chunk size. Please enter a positive number.", 'error');
+            return;
+        }
 
-            if (text.length > 0) {
-                let start = 0;
-                let chunkIndex = 1;
+        const totalChunks = Math.ceil(text.length / maxChunkSize);
+        if (totalChunks > maxChunks) {
+            showNotification(`Text is too long to process in ${maxChunks} chunks. Please increase the chunk size.`, 'error');
+            return;
+        }
 
-                while (start < text.length) {
-                    let end = start + maxChunkSize;
-                    if (end < text.length) {
-                        end = text.lastIndexOf(' ', end);
-                        if (end === -1) {
-                            end = start + maxChunkSize;
-                        }
+        // Return all chunk boxes to the pool before clearing the container
+        Array.from(container.children).forEach(chunkBox => returnChunkBox(chunkBox));
+
+        container.innerHTML = '';
+
+        if (text.length > 0) {
+            let start = 0;
+            let chunkIndex = 1;
+
+            while (start < text.length) {
+                let end = start + maxChunkSize;
+                if (end < text.length) {
+                    end = text.lastIndexOf(' ', end);
+                    if (end === -1) {
+                        end = start + maxChunkSize;
                     }
-
-                    const chunk = text.slice(start, end).trim();
-                    const chunkBox = getChunkBox();
-                    chunkBox.classList.remove('flash-green'); // Ensure no previous flash effect
-                    chunkBox.dataset.chunkIndex = chunkIndex;
-                    chunkBox.dataset.chunk = chunk;
-                    chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
-                    container.appendChild(chunkBox);
-
-                    start = end + 1;
-                    chunkIndex++;
                 }
-            }
 
-            showNotification(`${totalChunks} chunks created.`, 'success');
+                const chunk = text.slice(start, end).trim();
+                const chunkBox = getChunkBox();
+                chunkBox.style.display = 'block'; // Make sure the box is visible
+                chunkBox.dataset.chunkIndex = chunkIndex;
+                chunkBox.dataset.chunk = chunk;
+                chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
+                container.appendChild(chunkBox);
+
+                start = end + 1;
+                chunkIndex++;
+            }
         }
 
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `flash ${type}`;
-            notification.style.opacity = '1';
-            clearTimeout(notificationTimeout);
-            notificationTimeout = setTimeout(() => {
-                notification.style.opacity = '0';
-            }, 3000);
-        }
+        showNotification(`${totalChunks} chunks created.`, 'success');
+    }
 
-        document.getElementById('chunk-size').addEventListener('change', function() {
-            if (this.value === 'CUSTOM') {
-                document.getElementById('custom-size-container').style.display = 'block';
-            } else {
-                document.getElementById('custom-size-container').style.display = 'none';
-                updateChunks();
-            }
-        });
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.textContent = message;
+        notification.className = `flash ${type}`;
+        notification.style.opacity = '1';
+        clearTimeout(notificationTimeout);
+        notificationTimeout = setTimeout(() => {
+            notification.style.opacity = '0';
+        }, 3000);
+    }
 
-        document.getElementById('apply-button').addEventListener('click', function() {
+    document.getElementById('chunk-size').addEventListener('change', function() {
+        if (this.value === 'CUSTOM') {
+            document.getElementById('custom-size-container').style.display = 'block';
+        } else {
+            document.getElementById('custom-size-container').style.display = 'none';
             updateChunks();
-        });
+        }
+    });
 
-        document.getElementById('custom-size').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
+    document.getElementById('apply-button').addEventListener('click', function() {
+        updateChunks();
+    });
+
+    document.getElementById('custom-size').addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            updateChunks();
+        }
+    });
+
+    document.getElementById('text-box').addEventListener('input', function() {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            if (document.getElementById('chunk-size').value !== 'CUSTOM') {
                 updateChunks();
             }
-        });
+        }, 300);
+    });
 
-        document.getElementById('text-box').addEventListener('input', function() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                if (document.getElementById('chunk-size').value !== 'CUSTOM') {
-                    updateChunks();
-                }
-            }, 300);
-        });
+    document.addEventListener('DOMContentLoaded', () => {
+        initializePool();
+        isPageLoaded = true;
+        showNotification(`HELLO THERE! Welcome!.`, 'success');
+    });
+</script>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initializePool();
-            isPageLoaded = true;
-            showNotification(`HELLO THERE! Welcome!.`, 'success');
-        });
-    </script>
+
+
 </body>
 </html>
