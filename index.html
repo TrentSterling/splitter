@@ -4,7 +4,19 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Splitter4GPT</title>
+		<title>Splitter4GPT🗂️✂️: Efficient Text Chunking for ChatGPT and Large Texts</title>
+		<meta name="description"
+			content="Splitter4GPT is a powerful tool designed to split large texts into manageable chunks, making it easier to paste and process text in systems with input size limits like ChatGPT. Customize chunk sizes, drag and drop text files, and manage your text efficiently with our intuitive interface.">
+		<meta name="keywords"
+			content="text splitter, chunking tool, ChatGPT, text processing, large text handling, custom chunk size, drag and drop file, text chunker">
+		<meta name="author" content="Trent Sterling">
+		<meta property="og:title" content="Splitter4GPT🗂️✂️: Efficient Text Chunking for ChatGPT and Large Texts">
+		<meta property="og:description"
+			content="Easily manage and split large texts with Splitter4GPT. Customize chunk sizes, drag and drop files, and ensure seamless processing for platforms with text limits like ChatGPT.">
+		<meta property="og:image" content="logo.png">
+		<meta property="og:url" content="https://trentsterling.github.io/splitter/">
+		<meta property="og:type" content="website">
+
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 		<style>
 			body {
@@ -61,8 +73,8 @@
 
 			#container {
 				max-width: 1000px;
-				margin: 60px auto 20px auto;
-				padding: 30px;
+				margin: 30px auto 20px auto;
+				padding: 0px 30px 30px 30px;
 				background-color: #1e1e1e;
 				border-radius: 10px;
 				box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -233,11 +245,24 @@
 				background-color: #444;
 				border-color: #999;
 			}
+
+			#header {
+				text-align: center;
+				margin-top: 0px;
+			}
+
+			#logo {
+				max-width: 512px;
+				height: auto;
+			}
 		</style>
 	</head>
 
 	<body>
 		<div id="container">
+			<div id="header">
+				<img src="logo.png" alt="Splitter4GPT Logo" id="logo">
+			</div>
 			<h1>Splitter4GPT</h1>
 			<textarea id="text-box" placeholder="Paste your large text here..."></textarea>
 			<br>
@@ -281,6 +306,8 @@
 				is embedded in this single page. View Source and check it out!</p>
 			<p> My favorite website for splitting up text went down so I asked ChatGPT to make this alternative. Funny
 				world these days eh?</p>
+			<p><strong>Logo?</strong><br>
+				Bing image creator + Photoshop.</p>
 
 		</div>
 
