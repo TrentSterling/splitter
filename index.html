@@ -249,11 +249,17 @@
 			#header {
 				text-align: center;
 				margin-top: 0px;
+				padding: 0px 0;
+				display: flex;
+				align-items: center;
+				gap: 20px;
 			}
 
 			#logo {
-				max-width: 512px;
-				height: auto;
+				width: 256px;
+				/* Set logo width */
+				height: 256px;
+				/* Set logo height */
 			}
 		</style>
 	</head>
@@ -262,8 +268,8 @@
 		<div id="container">
 			<div id="header">
 				<img src="logo.png" alt="Splitter4GPT Logo" id="logo">
+				<h1>Splitter4GPT</h1> - by tront
 			</div>
-			<h1>Splitter4GPT</h1>
 			<textarea id="text-box" placeholder="Paste your large text here..."></textarea>
 			<br>
 			<div id="drop-area">
@@ -320,7 +326,7 @@
 
 
 		<script>
-			const previewSize = 30; // Preview size in characters
+			const previewSize = 60; // Preview size in characters
 			const maxChunks = 100; // Maximum number of chunks
 			const poolSize = 100; // Size of the pool for chunk boxes
 			let notificationTimeout;
