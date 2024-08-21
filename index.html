@@ -222,7 +222,7 @@
         <div id="chunks-container"></div>
     </div>
 
-    
+
     <div id="faq">
         <h2>FAQ</h2>
         <p><strong>What is this tool for?</strong><br>
@@ -236,9 +236,9 @@
 		<p><strong>Open Source?</strong><br>
         Yes. I made this project by simply prompting ChatGPT, so I don't really own any of the code. Everything is embedded in this single page. View Source and check it out!</p>
        <p> My favorite website for splitting up text went down so I asked ChatGPT to make this alternative. Funny world these days eh?</p>
-		
+
     </div>
-	
+
     <div id="footer">
         Splitter4GPT<br>
         A text splitter/chunker to make pasting large text into ChatGPT easier.<br><br>
@@ -342,7 +342,7 @@
                 const chunkBox = getChunkBox();
                 chunkBox.style.display = 'block'; // Make sure the box is visible
                 chunkBox.dataset.chunkIndex = chunkIndex;
-                chunkBox.dataset.chunk = chunk;
+                chunkBox.dataset.chunk = chunk + `\n\n[[END PART ${chunkIndex} / ${totalChunks}:  Remember not answering yet. Just acknowledge you received this part with the message "${chunkIndex} / ${totalChunks} received" and wait for the next part.]]`;
                 chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
                 container.appendChild(chunkBox);
 
