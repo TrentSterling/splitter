@@ -289,6 +289,7 @@
 				<button id="apply-button">Apply</button>
 			</div>
 			<div id="notification"></div>
+			<!--button onclick="copyInstructions()">Copy Instructions</button-->
 			<div id="chunks-container"></div>
 		</div>
 
@@ -326,6 +327,60 @@
 
 
 		<script>
+
+
+
+			const instructions = `
+			Instructions for Multi-Part Messages:
+
+			1. **Acknowledgment**: For each part, reply with:
+			   \`PART X/Y RECEIVED!\`
+			   where X is the part number and Y is the total number of parts.
+
+			2. **Wait for All Parts**: Do not analyze or respond until all parts are received.
+
+			3. **Final Signal**: After receiving all parts, I will send \`END OF MESSAGE\`. Only then start summarizing or analyzing.
+
+			Example:
+			- Part 1: \`PART 1 / 4 RECEIVED!\`
+			- Part 2: \`PART 2 / 4 RECEIVED!\`
+			- Part 3: \`PART 3 / 4 RECEIVED!\`
+			- Part 4: \`PART 4 / 4 RECEIVED!\`
+			- Final Signal: \`END OF MESSAGE\`
+
+			Each part will include instructions like:
+			\`[[END PART \${chunkIndex} / \${totalChunks}: Acknowledge with "\${chunkIndex} / \${totalChunks} RECEIVED!" and wait for all parts.]]\`
+			            `;
+
+
+
+			function copyInstructions() {
+				// Define the multi-part instructions to copy
+
+				// Create a temporary textarea to hold the instructions
+				const textarea = document.createElement('textarea');
+				textarea.value = instructions;
+				document.body.appendChild(textarea);
+
+				// Select and copy the instructions
+				textarea.select();
+				document.execCommand('copy');
+
+				// Remove the textarea from the document
+				document.body.removeChild(textarea);
+
+				// Alert the user that the instructions have been copied
+				showNotification(`Instructions copied to clipboard!`, 'success');
+				//alert('Instructions copied to clipboard!');
+			}
+
+
+			//
+
+
+
+
+
 			const previewSize = 60; // Preview size in characters
 			const maxChunks = 100; // Maximum number of chunks
 			const poolSize = 100; // Size of the pool for chunk boxes
@@ -420,7 +475,9 @@
 						const chunkBox = getChunkBox();
 						chunkBox.style.display = 'block'; // Make sure the box is visible
 						chunkBox.dataset.chunkIndex = chunkIndex;
-						chunkBox.dataset.chunk = chunk + `\n\n[[END PART ${chunkIndex} / ${totalChunks}:  Remember not answering yet. Just acknowledge you received this part with the message "${chunkIndex} / ${totalChunks} received" and wait for the next part.]]`;
+						let chunklets = chunkIndex + ' / ' + totalChunks;
+						//chunkBox.dataset.chunk = chunk + `\n\n[[END PART ${chunkIndex} / ${totalChunks}:  Remember not answering yet. Just acknowledge you received this part with the message "${chunkIndex} / ${totalChunks} received" and wait for the next part.]]`;
+						chunkBox.dataset.chunk = 'Do not answer yet. This is just another part of the text I want to send you. Just receive and acknowledge as "Part ' + chunklets + '" and wait for the next part.\n\n[START PART ' + chunklets + ']\n\n' + chunk + `\n\n[END PART ${chunkIndex} / ${totalChunks}] \n\n  Remember not answering yet. Just acknowledge you received this part with the message "${chunkIndex} / ${totalChunks} received" and wait for the next part.`;
 						chunkBox.textContent = `Chunk ${chunkIndex} / ${totalChunks}: ${chunk.slice(0, previewSize)}...`;
 						container.appendChild(chunkBox);
 
