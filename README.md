@@ -1,10 +1,11 @@
-# Splitter
-A text splitter/chunker to make pasting large text into ChatGPT easier.
+# splitter
 
-My favorite website for splitting up text went down recently so I asked ChatGPT to make this alternative. Funny world these days eh?
+Text splitter for ChatGPT - paste long text, split into chunks that fit the context window
+
+[![splitter screenshot](https://tront.xyz/img/splitter4gpt.png)](https://tront.xyz/splitter/)
 
 ---
 
-**[Try it live →](https://tront.xyz/splitter/)**
+[Try it live ->](https://tront.xyz/splitter/)
 
-Built by [Trent (Tront) Sterling](https://tront.xyz) · [Games Portfolio](https://tront.xyz/games/) · [Discord](https://tront.xyz/discord/)
+Built by [Trent (Tront) Sterling](https://tront.xyz) · [Games Portfolio](https://tront.xyz/games) · [Discord](https://tront.xyz/discord/)
