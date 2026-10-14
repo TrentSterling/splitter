@@ -33,7 +33,7 @@ test('no eager discovery media, preview controls, build disclaimers or global in
  assert.match(js,/id: 'smear'[\s\S]*?preview: null/);
  assert.match(js,/connection\.saveData/);
  assert.match(js,/var MAX_PREVIEWS = 3/);
- assert.match(js,/var RANDOM_COUNT = 2/);
+ assert.match(js,/var RANDOM_COUNT = 1/);
  assert.doesNotMatch(html,/data-tront-discovery-status/);
  for(const attr of manifest.surfaceAttributes) assert.ok(html.includes(attr+' data-tront-discovery-game-surface'));
 });
