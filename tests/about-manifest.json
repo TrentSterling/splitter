@@ -1,0 +1,25 @@
+{
+  "repository": "splitter",
+  "baseline": "4843eee7bef61960e6dd0c940ec40107a90f7e02",
+  "sharedRevision": "83dbfb4d8241501012c5ec22be49d79f28ccf6b7",
+  "javascriptSha256": "78e5f1cd0ab28f5361c445cecf6d539664d6ef5a39ceedb5228e2bfca5501bed",
+  "cssSha256": "70723556209736cc1d9e8dff2aa2fb5e68157d6ab0de2983406376baad85a8d0",
+  "bio": "<p>Splitter4GPT takes a large text file and splits it into chunks small enough to paste into ChatGPT or another language model, cutting on sensible boundaries instead of mid-sentence. Drag a file in, get the pieces out.</p><p>Everything happens in your browser; nothing is uploaded. One page, no install. By Tront (Trent Sterling).</p>",
+  "title": "Splitter4GPT by Tront",
+  "list": "<li><a href=\"https://tront.xyz/text2pdf/\">Text2PDF</a>: Offline text editor that exports to PDF, entirely in your browser.</li><li><a href=\"https://tront.xyz/spheres/\">Procedural Packed Texture Generator</a>: Generate procedurally packed tiling textures with a live WebGL shader preview.</li>",
+  "hub": "<a href=\"https://tront.xyz/games/\">All games and tools</a> &middot; <a href=\"https://tront.xyz/blog/\">Devlog</a> &middot; <a href=\"https://tront.xyz/discord/\">Discord</a> &middot; <a href=\"https://github.com/TrentSterling/splitter\">Source on GitHub</a> &middot; <a href=\"https://tront.xyz/\">tront.xyz</a>",
+  "jsonLd": "<script type=\"application/ld+json\">{\"@context\": \"https://schema.org\", \"@type\": \"SoftwareApplication\", \"name\": \"Splitter4GPT\", \"alternateName\": [\"Splitter4GPT by Tront\"], \"url\": \"https://tront.xyz/splitter/\", \"description\": \"Split large text files into chunks that fit into ChatGPT and other language models.\", \"author\": {\"@type\": \"Person\", \"name\": \"Trent Sterling\", \"alternateName\": \"Tront\", \"url\": \"https://tront.xyz/\"}, \"publisher\": {\"@type\": \"Organization\", \"name\": \"Tront\", \"url\": \"https://tront.xyz/\"}, \"isAccessibleForFree\": true, \"offers\": {\"@type\": \"Offer\", \"price\": \"0\", \"priceCurrency\": \"USD\"}, \"applicationCategory\": \"DeveloperApplication\", \"operatingSystem\": \"Web browser\"}</script>",
+  "scripts": [
+    "dd90d93a5b1cffb8fc5b6108be6a0583a6efbbd12f7c52687a0377fef5a73c2f",
+    "0cae8b3b838598e524d5e81348fce8214277cc83eb57c1d898c5efd0754b6d9e",
+    "119589ad9971122e93fcec084e8047f8fe074f12dd9dca2b69a3beadcfc3a8ff"
+  ],
+  "styles": [
+    "a5baf0075c0bacdeda22892c46a7a5a67b87e60cc0f134c0ef2158dd04b05779"
+  ],
+  "videos": [],
+  "surfaceAttributes": [
+    "id=\"container\""
+  ],
+  "sharedMerge": "5c22da598774e04d2bc854850a8e72b3a7fdb66f"
+}

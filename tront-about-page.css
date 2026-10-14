@@ -1,0 +1,9 @@
+/* Page theme and typography stay local to the opt-in About region. */
+#trontAbout { --td-surface:#1e1e1e;--td-border:#555;--td-text:#e0e0e0;--td-muted:#bbb;--td-purple:#00bcd4;--td-teal:#80deea; flex-shrink:0; font: 16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; margin:2rem auto; width:min(880px,calc(100% - 24px)); }
+#trontAbout .tront-discovery__project { margin:0 0 .65rem; padding:0; border:0; color:var(--td-text); font-family:inherit; font-weight:600; font-size:.95rem; line-height:1.4; text-align:left; }
+#trontAbout .tront-discovery__title { text-align:left; }
+#trontAbout .tront-discovery__links-list { display:grid; list-style:none; padding:0; margin:0 0 .75rem; }
+#trontAbout .tront-discovery__links-list li { margin:0; padding:0; }
+#trontAbout .tront-discovery__bio p { margin:0 0 .75rem; }
+#trontAbout .tront-discovery__description { margin:.45rem 0; }
+#trontAbout .tront-discovery__heading h2 { text-align:left; text-shadow:none; }

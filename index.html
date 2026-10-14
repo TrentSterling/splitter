@@ -270,10 +270,12 @@
 				/* Set logo height */
 			}
 		</style>
-	</head>
+	    <link rel="stylesheet" href="tront-about-discovery.css">
+    <link rel="stylesheet" href="tront-about-page.css">
+</head>
 
 	<body>
-		<div id="container">
+		<div id="container" data-tront-discovery-game-surface>
 			<div id="header">
 				<img src="logo.png" alt="Splitter4GPT Logo" id="logo">
 				<!--h1>Splitter4GPT</h1> - by tront-->
@@ -611,10 +613,23 @@
 
 
 	<!-- tront-about:start -->
-<style>.tront-about{position:fixed;left:12px;bottom:12px;z-index:2147483000;font:13px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;color:#e9ecef;text-align:left}.tront-about>summary{cursor:pointer;list-style:none;display:inline-block;background:#0b0d10d9;color:#e9ecef;border:1px solid #ffffff33;border-radius:999px;padding:6px 12px;backdrop-filter:blur(6px);user-select:none}.tront-about>summary::-webkit-details-marker{display:none}.tront-about>summary:hover{border-color:#ffffff66}.tront-about>div{margin-top:8px;width:min(560px,calc(100vw - 24px));max-height:70vh;overflow:auto;background:#0b0d10f5;border:1px solid #ffffff33;border-radius:12px;padding:14px 16px;box-shadow:0 12px 40px #000a}.tront-about h2{font-size:17px;margin:0 0 8px;color:#fff}.tront-about p{margin:0 0 9px}.tront-about a{color:#8fd3ff}.tront-about ul{margin:4px 0 10px;padding-left:18px}.tront-about li{margin:2px 0}.tront-about .tront-hub{opacity:.85;font-size:12px}</style>
-<details class="tront-about" id="trontAbout"><summary>About &middot; More by Tront</summary><div><h2>Splitter4GPT by Tront</h2><p>Splitter4GPT takes a large text file and splits it into chunks small enough to paste into ChatGPT or another language model, cutting on sensible boundaries instead of mid-sentence. Drag a file in, get the pieces out.</p><p>Everything happens in your browser; nothing is uploaded. One page, no install. By Tront (Trent Sterling).</p><p><strong>More from Tront</strong></p><ul><li><a href="https://tront.xyz/text2pdf/">Text2PDF</a>: Offline text editor that exports to PDF, entirely in your browser.</li><li><a href="https://tront.xyz/spheres/">Procedural Packed Texture Generator</a>: Generate procedurally packed tiling textures with a live WebGL shader preview.</li></ul><p class="tront-hub"><a href="https://tront.xyz/games/">All games and tools</a> &middot; <a href="https://tront.xyz/blog/">Devlog</a> &middot; <a href="https://tront.xyz/discord/">Discord</a> &middot; <a href="https://github.com/TrentSterling/splitter">Source on GitHub</a> &middot; <a href="https://tront.xyz/">tront.xyz</a></p></div></details>
+<section id="trontAbout" class="tront-discovery tront-discovery--about" data-tront-discovery data-current-game="splitter" aria-labelledby="tront-about-title">
+    <header class="tront-discovery__heading"><h2 id="tront-about-title">About Tront</h2></header>
+    <div class="tront-discovery__about">
+        <div class="tront-discovery__bio"><h3 class="tront-discovery__project">Splitter4GPT by Tront</h3><p>Splitter4GPT takes a large text file and splits it into chunks small enough to paste into ChatGPT or another language model, cutting on sensible boundaries instead of mid-sentence. Drag a file in, get the pieces out.</p><p>Everything happens in your browser; nothing is uploaded. One page, no install. By Tront (Trent Sterling).</p></div>
+        <div class="tront-discovery__links">
+            <h3>More from Tront</h3>
+            <ul class="tront-discovery__links-list"><li><a href="https://tront.xyz/text2pdf/">Text2PDF</a>: Offline text editor that exports to PDF, entirely in your browser.</li><li><a href="https://tront.xyz/spheres/">Procedural Packed Texture Generator</a>: Generate procedurally packed tiling textures with a live WebGL shader preview.</li></ul>
+            <p class="tront-discovery__hub"><a href="https://tront.xyz/games/">All games and tools</a> &middot; <a href="https://tront.xyz/blog/">Devlog</a> &middot; <a href="https://tront.xyz/discord/">Discord</a> &middot; <a href="https://github.com/TrentSterling/splitter">Source on GitHub</a> &middot; <a href="https://tront.xyz/">tront.xyz</a></p>
+        </div>
+    </div>
+    <h3 class="tront-discovery__games-title">Games</h3>
+    <div class="tront-discovery__grid" data-tront-discovery-cards></div>
+    <noscript><p class="tront-discovery__hub"><a href="/craftmine/">CraftMine</a> &middot; <a href="/smear/">SMEAR</a> &middot; <a href="/games/">More games and tools</a></p></noscript>
+</section>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Splitter4GPT", "alternateName": ["Splitter4GPT by Tront"], "url": "https://tront.xyz/splitter/", "description": "Split large text files into chunks that fit into ChatGPT and other language models.", "author": {"@type": "Person", "name": "Trent Sterling", "alternateName": "Tront", "url": "https://tront.xyz/"}, "publisher": {"@type": "Organization", "name": "Tront", "url": "https://tront.xyz/"}, "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "applicationCategory": "DeveloperApplication", "operatingSystem": "Web browser"}</script>
 <!-- tront-about:end -->
+<script src="tront-about-discovery.js"></script>
 </body>
 
 </html>
