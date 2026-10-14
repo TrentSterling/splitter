@@ -7,7 +7,7 @@
     var STORAGE_KEY = 'tront-about-discovery-session-v2';
     var FIXED_IDS = ['craftmine', 'smear'];
     var RANDOM_IDS = ['inkride', 'tinytreads', 'tinyrise'];
-    var RANDOM_COUNT = 2;
+    var RANDOM_COUNT = 1;
     var MAX_PREVIEWS = 3;
     var GAMES = [
         {
@@ -107,9 +107,12 @@
         return RANDOM_IDS.indexOf(id) !== -1;
     }
 
-    function validChoicePair(value) {
+    function validChoices(value) {
         if (!Array.isArray(value) || value.length !== RANDOM_COUNT) return false;
-        return isRandomId(value[0]) && isRandomId(value[1]) && value[0] !== value[1];
+        for (var i = 0; i < value.length; i += 1) {
+            if (!isRandomId(value[i]) || value.indexOf(value[i]) !== i) return false;
+        }
+        return true;
     }
 
     function stableSessionChoices(storage, random) {
@@ -117,13 +120,13 @@
         if (saved) {
             try {
                 var parsed = JSON.parse(saved);
-                if (validChoicePair(parsed)) {
+                if (validChoices(parsed)) {
                     memoryChoices = parsed.slice();
                     return memoryChoices.slice();
                 }
             } catch (_) { /* A stale or malformed session value is replaced below. */ }
         }
-        if (validChoicePair(memoryChoices)) {
+        if (validChoices(memoryChoices)) {
             safeWrite(storage, STORAGE_KEY, JSON.stringify(memoryChoices));
             return memoryChoices.slice();
         }
@@ -136,10 +139,7 @@
             roll = Math.max(0, Math.min(0.999999999, roll));
             firstIndex = Math.floor(roll * RANDOM_IDS.length);
         }
-        memoryChoices = [
-            RANDOM_IDS[firstIndex],
-            RANDOM_IDS[(firstIndex + 1) % RANDOM_IDS.length]
-        ];
+        memoryChoices = [RANDOM_IDS[firstIndex]];
         safeWrite(storage, STORAGE_KEY, JSON.stringify(memoryChoices));
         if (!legacyChoice) safeWrite(storage, LEGACY_STORAGE_KEY, memoryChoices[0]);
         return memoryChoices.slice();
