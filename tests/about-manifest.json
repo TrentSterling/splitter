@@ -1,8 +1,8 @@
 {
   "repository": "splitter",
   "baseline": "4843eee7bef61960e6dd0c940ec40107a90f7e02",
-  "sharedRevision": "83dbfb4d8241501012c5ec22be49d79f28ccf6b7",
-  "javascriptSha256": "78e5f1cd0ab28f5361c445cecf6d539664d6ef5a39ceedb5228e2bfca5501bed",
+  "sharedRevision": "fcda637550b9237140c89f9e42465ddd1cb07bf0",
+  "javascriptSha256": "cb5935a8e19c692c26fb8df302396138393528b0272d4cf00d72a906019248f0",
   "cssSha256": "70723556209736cc1d9e8dff2aa2fb5e68157d6ab0de2983406376baad85a8d0",
   "bio": "<p>Splitter4GPT takes a large text file and splits it into chunks small enough to paste into ChatGPT or another language model, cutting on sensible boundaries instead of mid-sentence. Drag a file in, get the pieces out.</p><p>Everything happens in your browser; nothing is uploaded. One page, no install. By Tront (Trent Sterling).</p>",
   "title": "Splitter4GPT by Tront",
